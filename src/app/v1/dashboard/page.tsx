@@ -25,6 +25,7 @@ import {
   User,
   Building2,
   Sparkles,
+  Globe,
 } from "lucide-react"
 
 export default function Page() {
@@ -53,22 +54,22 @@ export default function Page() {
     {
       icon: Building2,
       title: "Analyse a Company",
-      description: "Deep dive into financial health and market position.",
+      description: "Input a Company URL, and select a custom prompt from the context library for Amy to analyse it.",
     },
     {
       icon: FileText,
-      title: "Analyse a Document",
-      description: "Extract insights and summaries from reports.",
+      title: "Analyse an Document",
+      description: "Input a document and give Amy guidance to perform a certain type of analysis on it.",
     },
     {
       icon: User,
-      title: "Analyse a Person",
-      description: "Research background and professional history.",
+      title: "Analyse a Professional",
+      description: "Provide Amy with a professional profile and the type of analysis you'd like her to run on it.",
     },
     {
-      icon: Search,
-      title: "Run Research",
-      description: "Broad market analysis and trend identification.",
+      icon: Globe,
+      title: "Run Deep Research",
+      description: "Provide an open ended query for Amy to use her data sources and tools to solve.",
     },
   ]
 
@@ -220,7 +221,7 @@ export default function Page() {
       {/* Hero Section */}
       <div className="flex flex-col items-center justify-center space-y-8 mt-12 mb-8">
         <h1 className="text-4xl font-semibold tracking-tight text-center">
-          Welcome Back Joe, <br/>
+          Welcome Back Gabriel, <br/>
           <span className="text-muted-foreground">What shall we work on?</span>
         </h1>
 
@@ -240,15 +241,15 @@ export default function Page() {
       </div>
 
       {/* Action Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
         {actionCards.map((card, index) => (
-          <Card key={index} className="group hover:bg-accent/50 hover:shadow-sm transition-all cursor-pointer">
-            <CardHeader>
+          <Card key={index} className="group hover:border-2 hover:shadow-sm transition-all cursor-pointer aspect-square flex flex-col">
+            <CardHeader className="flex-1">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <card.icon className="h-5 w-5 text-primary" />
                 {card.title}
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="mt-2">
                 {card.description}
               </CardDescription>
             </CardHeader>
