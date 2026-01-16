@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -10,8 +10,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { ChatInput, ChatInputRef } from "@/components/chat-input"
 import { IntegrationModal } from "@/components/integration-modal"
+import { AnalysisModal, SavedCustomSkill } from "@/components/analysis-modal"
+import { PreBuiltSkillModal, PreBuiltSkillType } from "@/components/pre-built-skill-modal"
 import {
   Brain,
   Database,
@@ -26,13 +29,48 @@ import {
   Building2,
   Sparkles,
   Globe,
+  TrendingUp,
+  Activity,
+  Users,
+  Presentation,
+  Download,
+  Map,
 } from "lucide-react"
 
 export default function Page() {
   const [integrationModalOpen, setIntegrationModalOpen] = useState(false)
   const [activeIntegrationTab, setActiveIntegrationTab] = useState("crm")
   const [chatMessage, setChatMessage] = useState("")
+  const [activeSkillTab, setActiveSkillTab] = useState("custom")
+  const [analysisModalOpen, setAnalysisModalOpen] = useState(false)
+  const [selectedSkill, setSelectedSkill] = useState<{ type: "company" | "document" | "professional" | "research"; title: string } | null>(null)
+  const [preBuiltSkillModalOpen, setPreBuiltSkillModalOpen] = useState(false)
+  const [selectedPreBuiltSkill, setSelectedPreBuiltSkill] = useState<PreBuiltSkillType | null>(null)
+  const [savedSkills, setSavedSkills] = useState<SavedCustomSkill[]>([])
+  const [selectedSavedSkill, setSelectedSavedSkill] = useState<SavedCustomSkill | null>(null)
   const chatInputRef = useRef<ChatInputRef>(null)
+
+  // Load saved skills from localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = JSON.parse(localStorage.getItem("customSkills") || "[]")
+      setSavedSkills(saved)
+    }
+  }, [])
+
+  const handleSkillSaved = () => {
+    // Reload saved skills after saving
+    if (typeof window !== "undefined") {
+      const saved = JSON.parse(localStorage.getItem("customSkills") || "[]")
+      setSavedSkills(saved)
+    }
+  }
+
+  const handleSavedSkillClick = (savedSkill: SavedCustomSkill) => {
+    setSelectedSavedSkill(savedSkill)
+    setSelectedSkill({ type: savedSkill.skillType, title: savedSkill.name })
+    setAnalysisModalOpen(true)
+  }
 
   const openIntegration = (tab: string) => {
     setActiveIntegrationTab(tab)
@@ -45,96 +83,81 @@ export default function Page() {
     setChatMessage("")
   }
 
-  const handlePromptClick = (prompt: string) => {
-    setChatMessage(prompt)
-    chatInputRef.current?.focusInput()
-  }
 
-  const actionCards = [
+  const customSkillsCards = [
     {
       icon: Building2,
       title: "Analyse a Company",
       description: "Input a Company URL, and select a custom prompt from the context library for Amy to analyse it.",
+      type: "company" as const,
     },
     {
       icon: FileText,
       title: "Analyse an Document",
       description: "Input a document and give Amy guidance to perform a certain type of analysis on it.",
+      type: "document" as const,
     },
     {
       icon: User,
       title: "Analyse a Professional",
       description: "Provide Amy with a professional profile and the type of analysis you'd like her to run on it.",
+      type: "professional" as const,
     },
     {
       icon: Globe,
       title: "Run Deep Research",
       description: "Provide an open ended query for Amy to use her data sources and tools to solve.",
+      type: "research" as const,
     },
   ]
 
-  const promptChips = [
-    [
-      "Summarise my emails from today",
-      "Who am I meeting today?",
-      "How is Acme Corp performing?",
-      "Who raised money recently?",
-      "Check the latest news on tech stocks",
-      "Find competitors for Stripe",
-      "What is the sentiment of my last 5 meetings?",
-      "Draft a follow-up to Sarah",
-      "List top 5 VC deals this week",
-      "Analyze the latest SEC filing for Apple",
-    ],
-    [
-      "Find me some companies in the AI Memory layer",
-      "What's the latest on Generative AI regulation?",
-      "Summarize the key points from the last board deck",
-      "Who are the key players in Quantum Computing?",
-      "Draft an intro email to a potential investor",
-      "What is the current valuation of OpenAI?",
-      "Find recent acquisitions in the cybersecurity space",
-      "Create a one-pager for our new product",
-      "Analyze the competitive landscape for CRM tools",
-      "What are the emerging trends in SaaS?",
-    ],
-    [
-      "Identify key risks in this contract",
-      "Compare the pricing models of AWS and Azure",
-      "Find me a list of podcasts about venture capital",
-      "What are the best practices for term sheets?",
-      "Summarize the latest TechCrunch articles",
-      "Who is the CEO of Databricks?",
-      "Find me a graphic designer for our pitch deck",
-      "What are the upcoming tech conferences in SF?",
-      "Analyze the user feedback from our last survey",
-      "Draft a tweet about our new feature launch",
-    ],
-    [
-      "Find me companies similar to Notion",
-      "What is the market size for cloud gaming?",
-      "Summarize the key takeaways from the latest YC demo day",
-      "Who are the top angel investors in fintech?",
-      "Draft a LinkedIn post about our company culture",
-      "What are the legal requirements for a Series A round?",
-      "Find me a list of PR agencies for startups",
-      "Analyze the growth metrics of our competitor",
-      "What are the best tools for remote team management?",
-      "Draft a meeting agenda for the weekly all-hands",
-    ],
-    [
-      "Find me a list of potential beta testers",
-      "What are the latest trends in edtech?",
-      "Summarize the key points from the latest Fed meeting",
-      "Who are the top influencers in the crypto space?",
-      "Draft a press release for our funding announcement",
-      "What are the best books on product management?",
-      "Find me a list of co-working spaces in NYC",
-      "Analyze the social media presence of our brand",
-      "What are the tax implications of stock options?",
-      "Draft a welcome email for new employees",
-    ],
+  const handleSkillClick = (card: typeof customSkillsCards[0]) => {
+    setSelectedSkill({ type: card.type, title: card.title })
+    setAnalysisModalOpen(true)
+  }
+
+  const preBuiltSkillsCards = [
+    {
+      icon: Building2,
+      title: "Company 360" as PreBuiltSkillType,
+      description: "Comprehensive analysis of a company's financial health, market position, and strategic outlook.",
+    },
+    {
+      icon: TrendingUp,
+      title: "Competitor Analysis" as PreBuiltSkillType,
+      description: "Deep dive into competitive landscape, market positioning, and differentiation strategies.",
+    },
+    {
+      icon: Activity,
+      title: "Momentum Analysis" as PreBuiltSkillType,
+      description: "Track and analyze company growth trends, funding momentum, and market signals.",
+    },
+    {
+      icon: Users,
+      title: "Founder Assessment" as PreBuiltSkillType,
+      description: "Evaluate founder background, experience, and track record for investment decisions.",
+    },
+    {
+      icon: Presentation,
+      title: "Pitch Deck Analyzer" as PreBuiltSkillType,
+      description: "Analyze pitch decks for clarity, completeness, and investment readiness.",
+    },
+    {
+      icon: Download,
+      title: "Data Extract" as PreBuiltSkillType,
+      description: "Extract and structure key data points from documents, websites, and reports.",
+    },
+    {
+      icon: Map,
+      title: "Market Mapping" as PreBuiltSkillType,
+      description: "Map market landscapes, identify key players, and visualize market structures.",
+    },
   ]
+
+  const handlePreBuiltSkillClick = (skillType: PreBuiltSkillType) => {
+    setSelectedPreBuiltSkill(skillType)
+    setPreBuiltSkillModalOpen(true)
+  }
 
   return (
     <div className="flex flex-1 flex-col gap-8 p-8 max-w-7xl mx-auto w-full overflow-hidden">
@@ -143,6 +166,31 @@ export default function Page() {
         onOpenChange={setIntegrationModalOpen} 
         defaultTab={activeIntegrationTab} 
       />
+
+      {selectedSkill && (
+        <AnalysisModal
+          open={analysisModalOpen}
+          onOpenChange={(open) => {
+            setAnalysisModalOpen(open)
+            if (!open) {
+              setSelectedSavedSkill(null)
+              setSelectedSkill(null)
+            }
+          }}
+          skillType={selectedSkill.type}
+          skillTitle={selectedSkill.title}
+          savedContextItemIds={selectedSavedSkill?.contextItemIds}
+          onSkillSaved={handleSkillSaved}
+        />
+      )}
+
+      {selectedPreBuiltSkill && (
+        <PreBuiltSkillModal
+          open={preBuiltSkillModalOpen}
+          onOpenChange={setPreBuiltSkillModalOpen}
+          skillType={selectedPreBuiltSkill}
+        />
+      )}
 
       {/* Header Section with Tech Stack */}
       <div className="flex flex-col gap-4">
@@ -231,7 +279,7 @@ export default function Page() {
             ref={chatInputRef}
             value={chatMessage} 
             onChange={setChatMessage} 
-            onSend={handleChatSend} 
+            onSend={handleChatSend}
           />
           <div className="mt-2 flex items-center justify-center gap-2 text-xs text-muted-foreground">
              <Sparkles className="h-3 w-3" />
@@ -240,46 +288,96 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Action Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
-        {actionCards.map((card, index) => (
-          <Card key={index} className="group hover:border-2 hover:shadow-sm transition-all cursor-pointer aspect-square flex flex-col">
-            <CardHeader className="flex-1">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <card.icon className="h-5 w-5 text-primary" />
-                {card.title}
-              </CardTitle>
-              <CardDescription className="mt-2">
-                {card.description}
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        ))}
-      </div>
-
-      {/* Prompt Chips */}
-      <div className="flex flex-col gap-3 mt-4 overflow-hidden mask-fade-sides">
-        {promptChips.map((row, rowIndex) => (
-          <div 
-            key={rowIndex} 
-            className={`flex gap-3 whitespace-nowrap w-max hover:pause-animation ${
-              rowIndex % 2 === 0 ? "animate-marquee" : "animate-marquee-reverse"
-            }`}
-          >
-            {/* Duplicate content for seamless loop */}
-            {[...row, ...row].map((prompt, index) => (
-              <Badge
-                key={`${rowIndex}-${index}`}
-                variant="secondary"
-                className="text-sm py-1.5 px-4 cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors shrink-0"
-                onClick={() => handlePromptClick(prompt)}
+      {/* Skills Tabs and Cards */}
+      <Tabs value={activeSkillTab} onValueChange={setActiveSkillTab} className="w-full">
+        <TabsList className="mb-6">
+          <TabsTrigger value="custom">Custom Skills</TabsTrigger>
+          <TabsTrigger value="prebuilt">Pre-Built Skills</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="custom">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {customSkillsCards.map((card, index) => (
+              <Card 
+                key={index} 
+                className="group hover:border-2 hover:shadow-sm transition-all cursor-pointer aspect-square flex flex-col"
+                onClick={() => {
+                  setSelectedSavedSkill(null)
+                  handleSkillClick(card)
+                }}
               >
-                {prompt}
-              </Badge>
+                <CardHeader className="flex-1">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <card.icon className="h-5 w-5 text-primary" />
+                    {card.title}
+                  </CardTitle>
+                  <CardDescription className="mt-2">
+                    {card.description}
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            ))}
+            {savedSkills.map((savedSkill) => {
+              // Get icon based on skill type
+              const getIcon = () => {
+                switch (savedSkill.skillType) {
+                  case "company":
+                    return Building2
+                  case "document":
+                    return FileText
+                  case "professional":
+                    return User
+                  case "research":
+                    return Globe
+                  default:
+                    return Sparkles
+                }
+              }
+              const Icon = getIcon()
+              
+              return (
+                <Card 
+                  key={savedSkill.id} 
+                  className="group hover:border-2 hover:shadow-sm transition-all cursor-pointer aspect-square flex flex-col"
+                  onClick={() => handleSavedSkillClick(savedSkill)}
+                >
+                  <CardHeader className="flex-1">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Icon className="h-5 w-5 text-primary" />
+                      {savedSkill.name}
+                    </CardTitle>
+                    <CardDescription className="mt-2">
+                      {savedSkill.description || "Saved custom skill"}
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              )
+            })}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="prebuilt">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {preBuiltSkillsCards.map((card, index) => (
+              <Card 
+                key={index} 
+                className="group hover:border-2 hover:shadow-sm transition-all cursor-pointer aspect-square flex flex-col"
+                onClick={() => handlePreBuiltSkillClick(card.title)}
+              >
+                <CardHeader className="flex-1">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <card.icon className="h-5 w-5 text-primary" />
+                    {card.title}
+                  </CardTitle>
+                  <CardDescription className="mt-2">
+                    {card.description}
+                  </CardDescription>
+                </CardHeader>
+              </Card>
             ))}
           </div>
-        ))}
-      </div>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

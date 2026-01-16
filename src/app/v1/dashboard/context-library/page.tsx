@@ -25,8 +25,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { AddContextModal, ContextItem, ContextType } from "@/components/context-library/add-context-modal"
+import { useContextLibrary } from "@/components/context-library/context-provider"
 
-const initialMockData: ContextItem[] = [
+export const initialMockData: ContextItem[] = [
   {
     id: "1",
     name: "Summarize Pitch Deck",
@@ -99,21 +100,16 @@ const typeConfig: Record<ContextType, { icon: typeof Sparkles; color: string; la
 }
 
 export default function ContextLibraryPage() {
-  const [items, setItems] = useState<ContextItem[]>(initialMockData)
+  const { items, addItem, deleteItem } = useContextLibrary()
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [activeTab, setActiveTab] = useState("all")
 
   const handleAddContext = (newItem: Omit<ContextItem, "id" | "createdAt">) => {
-    const item: ContextItem = {
-      ...newItem,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-    }
-    setItems((prev) => [item, ...prev])
+    addItem(newItem)
   }
 
   const handleDeleteContext = (id: string) => {
-    setItems((prev) => prev.filter((item) => item.id !== id))
+    deleteItem(id)
   }
 
   const filteredItems = activeTab === "all" 

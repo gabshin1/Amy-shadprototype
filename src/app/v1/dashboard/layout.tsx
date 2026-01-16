@@ -3,6 +3,7 @@ import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar"
+import { ContextLibraryProvider } from "@/components/context-library/context-provider"
 
 export default function DashboardLayout({
   children,
@@ -10,11 +11,13 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <SidebarProvider>
-      <AppSidebar version="v1" />
-      <SidebarInset>
-        {children}
-      </SidebarInset>
-    </SidebarProvider>
+    <ContextLibraryProvider>
+      <SidebarProvider>
+        <AppSidebar version="v1" />
+        <SidebarInset>
+          {children}
+        </SidebarInset>
+      </SidebarProvider>
+    </ContextLibraryProvider>
   )
 }

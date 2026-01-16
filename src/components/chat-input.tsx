@@ -12,6 +12,9 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
+import { ContextMentionPopup } from "./context-mention-popup"
+import { useContextLibrary } from "./context-library/context-provider"
+import { ContextItem } from "./context-library/add-context-modal"
 
 // InputGroup components implementation based on ShadCN patterns
 
@@ -125,8 +128,21 @@ export const ChatInput = React.forwardRef<ChatInputRef, ChatInputProps>(({ onSen
   const [placeholderIndex, setPlaceholderIndex] = React.useState(0)
   const [fade, setFade] = React.useState(false)
   const [isHighlighted, setIsHighlighted] = React.useState(false)
+  const [mentionOpen, setMentionOpen] = React.useState(false)
+  const [mentionQuery, setMentionQuery] = React.useState("")
+  const [mentionStartPos, setMentionStartPos] = React.useState<number | null>(null)
   
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+  const inputGroupRef = React.useRef<HTMLDivElement>(null)
+
+  // Get context items
+  let contextItems: ContextItem[] = []
+  try {
+    const context = useContextLibrary()
+    contextItems = context.items
+  } catch {
+    contextItems = []
+  }
 
   // Expose focus method via ref
   React.useImperativeHandle(ref, () => ({
@@ -167,7 +183,71 @@ export const ChatInput = React.forwardRef<ChatInputRef, ChatInputProps>(({ onSen
     }
   }
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value
+    const cursorPos = e.target.selectionStart
+    
+    setMessage(newValue)
+    
+    // Detect @ mention
+    const textBeforeCursor = newValue.substring(0, cursorPos)
+    const lastAtIndex = textBeforeCursor.lastIndexOf("@")
+    
+    if (lastAtIndex !== -1) {
+      // Check if there's a space or newline after @ (mention ended)
+      const textAfterAt = textBeforeCursor.substring(lastAtIndex + 1)
+      const hasSpaceOrNewline = /[\s\n]/.test(textAfterAt)
+      
+      if (!hasSpaceOrNewline) {
+        // We're in a mention - extract query
+        const query = textAfterAt
+        setMentionQuery(query)
+        setMentionStartPos(lastAtIndex)
+        setMentionOpen(true)
+        return
+      }
+    }
+    
+    // Close mention if @ was removed or we moved out of mention context
+    if (mentionOpen) {
+      setMentionOpen(false)
+      setMentionQuery("")
+      setMentionStartPos(null)
+    }
+  }
+
+  const handleMentionSelect = (item: ContextItem) => {
+    if (mentionStartPos === null || !textareaRef.current) return
+    
+    const currentValue = message
+    const textBefore = currentValue.substring(0, mentionStartPos)
+    const textAfter = currentValue.substring(textareaRef.current.selectionStart)
+    
+    // Insert mention as text: @itemName
+    const mentionText = `@${item.name} `
+    const newValue = textBefore + mentionText + textAfter
+    
+    setMessage(newValue)
+    setMentionOpen(false)
+    setMentionQuery("")
+    setMentionStartPos(null)
+    
+    // Restore cursor position
+    setTimeout(() => {
+      if (textareaRef.current) {
+        const newCursorPos = textBefore.length + mentionText.length
+        textareaRef.current.setSelectionRange(newCursorPos, newCursorPos)
+        textareaRef.current.focus()
+      }
+    }, 0)
+  }
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Don't interfere with mention popup keyboard navigation
+    if (mentionOpen && (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter" || e.key === "Escape")) {
+      return
+    }
+    
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
       handleSend()
@@ -175,17 +255,21 @@ export const ChatInput = React.forwardRef<ChatInputRef, ChatInputProps>(({ onSen
   }
 
   return (
-    <InputGroup className={cn(
-      isHighlighted && "ring-2 ring-primary ring-offset-2 border-primary"
-    )}>
-      <InputGroupTextarea
-        ref={textareaRef}
-        placeholder={PLACEHOLDERS[placeholderIndex]}
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        onKeyDown={handleKeyDown}
-        className={cn(fade && "placeholder:text-transparent transition-colors duration-200")}
-      />
+    <div className="relative">
+      <InputGroup 
+        ref={inputGroupRef}
+        className={cn(
+          isHighlighted && "ring-2 ring-primary ring-offset-2 border-primary"
+        )}
+      >
+        <InputGroupTextarea
+          ref={textareaRef}
+          placeholder={PLACEHOLDERS[placeholderIndex]}
+          value={message}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          className={cn(fade && "placeholder:text-transparent transition-colors duration-200")}
+        />
       <InputGroupAddon align="block-end">
         <InputGroupButton
           variant="outline"
@@ -222,6 +306,19 @@ export const ChatInput = React.forwardRef<ChatInputRef, ChatInputProps>(({ onSen
         </InputGroupButton>
       </InputGroupAddon>
     </InputGroup>
+    
+    <ContextMentionPopup
+      open={mentionOpen}
+      query={mentionQuery}
+      items={contextItems}
+      onSelect={handleMentionSelect}
+      onClose={() => {
+        setMentionOpen(false)
+        setMentionQuery("")
+        setMentionStartPos(null)
+      }}
+    />
+    </div>
   )
 })
 ChatInput.displayName = "ChatInput"
