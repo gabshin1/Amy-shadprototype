@@ -275,14 +275,20 @@ const signals: Signal[] = [
     name: "Employee Seniority Mix",
     description: "Track organizational maturity signals",
     category: "team-talent",
+<<<<<<< HEAD
     hasThreshold: false,
+=======
+>>>>>>> origin/deploy-to-production
   },
   {
     id: "key-executive-changes",
     name: "Key Executive Changes",
     description: "Alert on C-suite and leadership changes",
     category: "team-talent",
+<<<<<<< HEAD
     hasThreshold: false,
+=======
+>>>>>>> origin/deploy-to-production
   },
   // Product & Innovation
   {
@@ -290,7 +296,10 @@ const signals: Signal[] = [
     name: "New Product Launches",
     description: "Track innovation velocity and product expansion",
     category: "product-innovation",
+<<<<<<< HEAD
     hasThreshold: false,
+=======
+>>>>>>> origin/deploy-to-production
   },
   {
     id: "product-reviews",
@@ -306,14 +315,20 @@ const signals: Signal[] = [
     name: "Technology Stack",
     description: "Track technical sophistication and infrastructure investments",
     category: "product-innovation",
+<<<<<<< HEAD
     hasThreshold: false,
+=======
+>>>>>>> origin/deploy-to-production
   },
   {
     id: "pricing-changes",
     name: "Pricing Changes",
     description: "Alert when pricing changes",
     category: "product-innovation",
+<<<<<<< HEAD
     hasThreshold: false,
+=======
+>>>>>>> origin/deploy-to-production
   },
   // Market & Momentum
   {
@@ -348,14 +363,20 @@ const signals: Signal[] = [
     name: "Partnerships",
     description: "Track strategic alliances and partnership announcements",
     category: "market-momentum",
+<<<<<<< HEAD
     hasThreshold: false,
+=======
+>>>>>>> origin/deploy-to-production
   },
   {
     id: "new-customers",
     name: "New Customers",
     description: "Monitor customer acquisition and notable client wins",
     category: "market-momentum",
+<<<<<<< HEAD
     hasThreshold: false,
+=======
+>>>>>>> origin/deploy-to-production
   },
   // Business Activity
   {
@@ -363,28 +384,40 @@ const signals: Signal[] = [
     name: "Office Expansion",
     description: "Track geographic expansion and market prioritization",
     category: "business-activity",
+<<<<<<< HEAD
     hasThreshold: false,
+=======
+>>>>>>> origin/deploy-to-production
   },
   {
     id: "company-updates",
     name: "Company Updates",
     description: "Monitor transparency and momentum indicators",
     category: "business-activity",
+<<<<<<< HEAD
     hasThreshold: false,
+=======
+>>>>>>> origin/deploy-to-production
   },
   {
     id: "news-coverage",
     name: "News Coverage",
     description: "Track media momentum and market perception",
     category: "business-activity",
+<<<<<<< HEAD
     hasThreshold: false,
+=======
+>>>>>>> origin/deploy-to-production
   },
   {
     id: "business-description-changes",
     name: "Business Description Changes",
     description: "Alert on positioning shifts and strategy pivots",
     category: "business-activity",
+<<<<<<< HEAD
     hasThreshold: false,
+=======
+>>>>>>> origin/deploy-to-production
   },
 ]
 
