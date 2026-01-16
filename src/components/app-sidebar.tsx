@@ -108,9 +108,8 @@ const data = {
     },
     {
       title: "Reports",
-      url: "#",
+      url: "/dashboard/reports",
       icon: FileText,
-      action: "reports",
     },
     {
       title: "Tasks",
@@ -133,12 +132,12 @@ const data = {
       icon: Activity,
       items: [
         {
-          title: "System Status",
-          url: "#",
+          title: "Company",
+          url: "/dashboard/monitoring/company",
         },
         {
-          title: "Logs",
-          url: "#",
+          title: "People",
+          url: "/dashboard/monitoring/people",
         },
       ],
     },
@@ -311,9 +310,8 @@ export function AppSidebar({ version = "v1", ...props }: AppSidebarProps) {
       return [
         {
           title: "Reports",
-          url: "#",
+          url: `/${version}/dashboard/reports`,
           icon: FileText,
-          action: "reports",
         },
       ]
     }
