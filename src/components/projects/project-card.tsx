@@ -35,7 +35,7 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <Card className="flex flex-col h-full hover:shadow-md transition-all duration-200">
+    <Card className="flex flex-col h-[200px] hover:shadow-md transition-all duration-200">
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
         <div className="space-y-1.5">
           <CardTitle className="text-base font-semibold leading-none tracking-tight">

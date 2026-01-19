@@ -57,11 +57,11 @@ export function RecentActivity() {
 
   return (
     <div className="grid md:grid-cols-2 gap-4">
-       <Card>
+       <Card className="h-[200px] flex flex-col overflow-hidden">
           <CardHeader>
              <CardTitle className="text-base font-semibold">Recent Chats</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-0">
+          <CardContent className="space-y-0 flex-1 overflow-y-auto">
              {activities.filter(a => a.type === "chat").map((item, i) => (
                 <div key={i} className="flex items-start gap-4 p-4 hover:bg-muted/50 transition-colors cursor-pointer border-b last:border-0 -mx-6 px-6 last:pb-0 first:pt-0">
                    <Avatar className="h-8 w-8">
@@ -84,11 +84,11 @@ export function RecentActivity() {
           </CardContent>
        </Card>
 
-       <Card>
+       <Card className="h-[200px] flex flex-col overflow-hidden">
           <CardHeader>
              <CardTitle className="text-base font-semibold">Recent Reports</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-0">
+          <CardContent className="space-y-0 flex-1 overflow-y-auto">
              {activities.filter(a => a.type === "report").map((item, i) => (
                 <div key={i} className="flex items-start gap-4 p-4 hover:bg-muted/50 transition-colors cursor-pointer border-b last:border-0 -mx-6 px-6 last:pb-0 first:pt-0">
                     <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">

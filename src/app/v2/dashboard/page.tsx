@@ -195,7 +195,7 @@ export default function Page() {
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="h-[200px] flex flex-col">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Active Workflows
@@ -210,7 +210,7 @@ export default function Page() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="h-[200px] flex flex-col">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Completed Today
@@ -225,7 +225,7 @@ export default function Page() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="h-[200px] flex flex-col">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Companies Analyzed
@@ -240,7 +240,7 @@ export default function Page() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="h-[200px] flex flex-col">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Pending Actions
@@ -259,11 +259,11 @@ export default function Page() {
       {/* Task Activity Section */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {/* Active & Recent Tasks */}
-        <Card className="h-full">
+        <Card className="h-[200px] flex flex-col overflow-hidden">
           <CardHeader>
             <CardTitle>Active & Recent Activity</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-1 overflow-y-auto">
             <div className="space-y-4">
               {activeTasks.map((task) => (
                 <div
@@ -297,11 +297,11 @@ export default function Page() {
         </Card>
 
         {/* Upcoming Queue */}
-        <Card className="h-full">
+        <Card className="h-[200px] flex flex-col overflow-hidden">
           <CardHeader>
             <CardTitle>Upcoming Queue</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-1 overflow-y-auto">
             <div className="space-y-4">
               {upcomingTasks.map((task) => (
                 <div
@@ -336,12 +336,12 @@ export default function Page() {
         </Card>
 
         {/* Scheduled Automations (New) */}
-        <Card className="h-full">
+        <Card className="h-[200px] flex flex-col overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
              <CardTitle className="text-lg">Scheduled Automations</CardTitle>
              <Badge variant="outline" className="text-xs font-normal">Next 24h</Badge>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent className="pt-6 flex-1 overflow-y-auto">
             <div className="space-y-4">
               {scheduledAutomations.map((auto) => (
                 <div
